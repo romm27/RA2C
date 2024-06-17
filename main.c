@@ -13,22 +13,22 @@ typedef struct{
 
 #define size_t TAMANHO_ELEMENT = sizeof(Car);
 
-
 #define MENU   "\n +---------------------------------------+ \
                 \n |          ESCOLHA A MODALIDADE         | \
                 \n +---------------------------------------+ \
-                \n | [ 1 ] Exibir Lista Completa           | \
-                \n | [ 2 ] Exibir Todos por marca          | \
-                \n | [ 3 ] Inserir um novo Registro        | \
-                \n | [ 4 ] Remover Todos por Quilometragem | \
+                \n | [ 1 ] Exibir lista completa           | \
+                \n | [ 2 ] Exibir todos por marca          | \
+                \n | [ 3 ] Inserir um novo registro        | \
+                \n | [ 4 ] Remover todos por quilometragem | \
                 \n | [ 5 ] Sair                            | \
                 \n +---------------------------------------+ \n"
 
-
 int main(int argc, char const *argv[])
 {
-    FILE * data = fopen("dados.txt", "r");
+    printf("%s", "\nBem vindo!\n");
 
+    FILE * data = fopen("dados.txt", "r");
+ 
     if(data == NULL){
         printf("%s", "ERRO FATAL: ARQUIVO NÃO EXISTE");
         return 1;
@@ -53,6 +53,8 @@ int main(int argc, char const *argv[])
         case 4:
             break;
         case 5:
+            run = false;
+            printf("%s", "\nMuito obrigado!\n");
             break;
 
         default:
