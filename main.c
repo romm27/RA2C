@@ -52,7 +52,7 @@ int main(int argc, char const *argv[])
             break;
 
         default:
-            printf("%s", "Opção desconhecida");
+            printf("%s", "\nPor favor, tente novamente.\n");
             continue;
         }
     }
