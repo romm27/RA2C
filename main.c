@@ -8,7 +8,7 @@ typedef struct{
     int manufactureYear;
     int mileage;
     int price;
-    struct Car* end;
+    struct Car* next;
 } Car;
 
 #define size_t TAMANHO_ELEMENT = sizeof(Car);
