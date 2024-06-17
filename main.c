@@ -8,17 +8,21 @@ typedef struct{
     int manufactureYear;
     int mileage;
     int price;
+    struct Car* end;
 } Car;
 
-#define MENU         "\n +---------------------------------------+ \
-                      \n |          ESCOLHA A MODALIDADE         | \
-                      \n +---------------------------------------+ \
-                      \n | [ 1 ] Exibir Lista Completa           | \
-                      \n | [ 2 ] Exibir Todos por marca          | \
-                      \n | [ 3 ] Inserir um novo Registro        | \
-                      \n | [ 4 ] Remover Todos por Quilometragem | \
-                      \n | [ 5 ] Sair                            | \
-                      \n +---------------------------------------+ \n"
+#define size_t TAMANHO_ELEMENT = sizeof(Car);
+
+
+#define MENU   "\n +---------------------------------------+ \
+                \n |          ESCOLHA A MODALIDADE         | \
+                \n +---------------------------------------+ \
+                \n | [ 1 ] Exibir Lista Completa           | \
+                \n | [ 2 ] Exibir Todos por marca          | \
+                \n | [ 3 ] Inserir um novo Registro        | \
+                \n | [ 4 ] Remover Todos por Quilometragem | \
+                \n | [ 5 ] Sair                            | \
+                \n +---------------------------------------+ \n"
 
 
 int main(int argc, char const *argv[])
