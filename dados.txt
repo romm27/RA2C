@@ -1,3 +1,4 @@
+10
 Honda
 HRV EX
 2022
@@ -18,3 +19,33 @@ Focus SE 1.6
 2024
 0
 100000.00
+Honda
+Civic
+2024
+0
+240000.00
+Toyota
+Corolla
+2023
+10000
+130000.00
+Volkswagen
+Virtuos TSI
+2025
+0
+112000.00
+Renault
+Kwid
+2022
+15000
+65000.00
+Nissan
+Sentra
+2022
+9000
+125000.00
+Chevrolet
+Vectra
+2011
+56000
+40000.00
