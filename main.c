@@ -67,7 +67,7 @@ void print_car(Car c) {
 // O correto é ter a função que lê do arquivo e monta as structs, outra que imprima todas as structs sem ler do arquivo de novo.
 int print_cars_list() {
     FILE *data = fopen("dados.txt", "r");
-    if (data == NULL) { perror("ERRO"); exit(1); }
+    if (data == NULL) { perror("Erro ao abrir o arquivo"); exit(1); }
 
     Car cars[MAX_NAME];
     char c; // usado para descartar caracteres da entrada
