@@ -27,6 +27,33 @@ typedef struct{
                     \n | [ 6 ] Sair                                                    | \
                     \n +---------------------------------------------------------------+ \n"
 
+// Conta quantos carros tem no arquivo
+int count() {
+    FILE *data = fopen("dados.txt", "r");
+    if (file == NULL) {
+        perror("Erro ao abrir o arquivo");
+        return -1;
+    }
+
+    int count = 0;
+    char c;
+
+    while ((c = fgetc(file)) != EOF) {
+        if (c == '\n') {
+            count++;
+        }
+    }
+
+    if (c != '\n' && count > 0) {
+        count++;
+    }
+    quantity = count / 5;
+
+    fclose(file);
+
+    return quantity;
+}
+
 void print_car(Car c) {
     printf("Marca:                %s \n");
     printf("Modelo:               %s \n");
@@ -36,9 +63,6 @@ void print_car(Car c) {
     printf("\n\n", c.brand, c.model, c.manufactureYear, c.mileage, c.price);
 }
 
-//função que lê do arquivo e transforma em struct
-
-
 //Lê do arquivo e transforma em structs e já imprime
 // O correto é ter a função que lê do arquivo e monta as structs, outra que imprima todas as structs sem ler do arquivo de novo.
 int print_cars_list() {
@@ -47,7 +71,7 @@ int print_cars_list() {
 
     Car cars[MAX_NAME];
     char c; // usado para descartar caracteres da entrada
-    int quantity; // Estou usando um número que é a primeira linha do arquivo por enquanto, mas deve se contar as linhas e dividir pelo número de linhas de cada veículo para contar quantos tem
+    int quantity = count();
 
     fscanf(data, "%d", &quantity);
     // descarta tudo até o LF:
@@ -122,26 +146,14 @@ int insert_new_car() {
 
     puts("\nNovo veículo adicionado com sucesso!");
 
-    // printf("\nMarca: %s\nModelo: %s\nAno de Fabricação: %d\nQuilometragem: %d\nPreço: %d\n",
-    //        new_car.brand, new_car.model, new_car.manufactureYear, new_car.mileage, new_car.price);
-
     return 0;
-
-
-    // Cria um novo carro
-    // Car* p = (Car*) malloc(ELEMENT_SIZE);
-    // strcpy(p->brand, "Volkswagen");
-    // strcpy(p->model = "Amarok");
-    // p->manufactureYear = 2020;
-    // p->mileage = 130000;
-    // p->price = 100000;
-    // free(p);
 }
 
 int main(int argc, char const *argv[])
 {
     printf("%s", "\nBem vindo!\n");
 
+    // Depois seja melhor retirar o abrir e fechar das funções deixar só aqui se der certo
     // FILE* data = fopen("dados.txt", "r");
  
     // if(data == NULL){ printf("%s", "Falha na abertura do arquivo."); exit(0); }
