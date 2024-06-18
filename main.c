@@ -122,6 +122,45 @@ Car* insert_new_car(Car* head) {
     return head;
 }
 
+Car* remove_cars_by_mileage(Car* head, int max_mileage) {
+    Car* current = head;
+    Car* prev = NULL;
+
+    while (current != NULL) {
+        if (current->mileage > max_mileage) {
+            Car* to_delete = current;
+            if (prev == NULL) {
+                head = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            current = current->next;
+            free(to_delete);
+        } else {
+            prev = current;
+            current = current->next;
+        }
+    }
+    return head;
+}
+                            //"" = any brand           -1 = any price
+int print_car_list(Car* car_list, char* brand, float min_price, float max_price){
+    printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
+    Car* temp = car_list;
+    while (temp != NULL) {
+        int too_cheap = min_price > -1 && (temp->price < min_price);
+        int too_expensive = max_price > -1 && temp->price > max_price;
+        int invalid_brand = brand != "" && strcmp(brand, temp->brand);
+
+        //printf("%i %i %i ", too_cheap, too_expensive, invalid_brand); //Debug
+
+        if((too_cheap + too_expensive + invalid_brand) == 0){ //Checks if all of the conditions are false.
+            print_car(temp);
+        }
+        temp = temp->next;
+    }
+}
+
 int main() {
     printf("%s", "\nBem vindo!\n");
 
@@ -138,21 +177,32 @@ int main() {
         switch (choice)
         {
         case 1:
-            printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
-            Car* temp = car_list;
-            while (temp != NULL) {
-                print_car(temp);
-                temp = temp->next;
-            }
+            print_car_list(car_list, "", -1, -1);
             break;
         case 2:
+            char brand_name[MAX_NAME];
+            printf("Por favor digite o nome da marca que você deseja buscar corretamente: ");
+            scanf("%s", brand_name);
+            print_car_list(car_list, brand_name, -1, -1);
             break;
         case 3:
+            float min_price, max_price;
+            printf("Digite o preço mínimo: ");
+            scanf("%f", &min_price);
+            printf("Digite o preço máximo: ");
+            scanf("%f", &max_price);
+            print_car_list(car_list, "", min_price, max_price);
             break;
         case 4:
             car_list = insert_new_car(car_list);
             break;
         case 5:
+            int max_mil;
+            printf("Digite a quilometragem máxima a ser mantida: ");
+            scanf("%d", &max_mil);
+            car_list = remove_cars_by_mileage(car_list, max_mil);
+            printf("Todos os Veículos com a quilometragem acima de %d km foram removidos.\n", max_mil);
+            print_car_list(car_list, "", -1, -1);
             break;
         case 6:
             run = 0;
