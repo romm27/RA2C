@@ -20,114 +20,112 @@ typedef struct Car {
     char model[MAX_NAME];
     int manufactureYear;
     int mileage;
-    int price; //Necessário fazer correções para float
+    float price;
+    struct Car* next;
 } Car;
 
-void print_car(Car c) {
-    printf("Marca:                %s\n", c.brand);
-    printf("Modelo:               %s\n", c.model);
-    printf("Ano de fabricação:    %d\n", c.manufactureYear);
-    printf("Quilometragem:        %d km\n", c.mileage);
-    printf("Preço:                R$ %d\n\n", c.price);
+void print_car(Car* c) {
+    printf("Marca:                %s\n", c->brand);
+    printf("Modelo:               %s\n", c->model);
+    printf("Ano de fabricação:    %d\n", c->manufactureYear);
+    printf("Quilometragem:        %d km\n", c->mileage);
+    printf("Preço:                R$ %.2f\n\n", c->price);
 }
 
-Car* read_cars_from_file(const char* filename, int* car_count) {
-    FILE* file = fopen("dados.txt", "r");
+Car* insert_car_sorted(Car* head, Car* new_car) {
+    if (head == NULL || head->price > new_car->price) {
+        new_car->next = head;
+        return new_car;
+    }
+
+    Car* current = head;
+    while (current->next != NULL && current->next->price < new_car->price) {
+        current = current->next;
+    }
+
+    new_car->next = current->next;
+    current->next = new_car;
+    
+    return head;
+}
+
+Car* read_cars_from_file(const char* filename) {
+    FILE* file = fopen(filename, "r");
     if (file == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo.\n");
+        fprintf(stderr, "Erro de abertura do arquivo!\n");
         exit(EXIT_FAILURE);
     }
 
-    int count = 0;
+    Car* head = NULL;
     char buffer[256];
-    while (fgets(buffer, sizeof(buffer), file) != NULL) {
-        count++;
-    }
+    while (fgets(buffer, sizeof(buffer), file)) {
+        Car* new_car = (Car*)malloc(sizeof(Car));
+        if (new_car == NULL) {
+            fprintf(stderr, "Erro de alocação de memória!\n");
+            exit(EXIT_FAILURE);
+        }
 
-    count /= 5;
-
-    rewind(file);
-
-    Car* cars = (Car*)malloc(count * sizeof(Car));
-    if (cars == NULL) {
-        fprintf(stderr, "Erro ao alocar memória para os carros.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    int index = 0;
-    while (index < count) {
-        fgets(cars[index].brand, MAX_NAME, file);
-        cars[index].brand[strcspn(cars[index].brand, "\n")] = 0;
-
-        fgets(cars[index].model, MAX_NAME, file);
-        cars[index].model[strcspn(cars[index].model, "\n")] = 0;
-
+        strcpy(new_car->brand, strtok(buffer, "\n"));
         fgets(buffer, sizeof(buffer), file);
-        sscanf(buffer, "%d", &cars[index].manufactureYear);
-
+        strcpy(new_car->model, strtok(buffer, "\n"));
         fgets(buffer, sizeof(buffer), file);
-        sscanf(buffer, "%d", &cars[index].mileage);
-
+        new_car->manufactureYear = atoi(buffer);
         fgets(buffer, sizeof(buffer), file);
-        sscanf(buffer, "%d", &cars[index].price);
+        new_car->mileage = atoi(buffer);
+        fgets(buffer, sizeof(buffer), file);
+        new_car->price = atof(buffer);
+        new_car->next = NULL;
 
-        index++;
+        head = insert_car_sorted(head, new_car);
     }
 
     fclose(file);
-
-    *car_count = count;
-    return cars;
+    return head;
 }
 
-Car* insert_new_car(Car* cars, int* car_count) {
-    printf("\nInsira os dados de um novo veículo.\n\n");
+Car* insert_new_car(Car* head) {
+    printf("\nInsira os dados de um novo veículo.\n");
 
-    Car new_car;
+    Car* new_car = (Car*)malloc(sizeof(Car));
+    if (new_car == NULL) {
+        fprintf(stderr, "Erro de alocação de memória!\n");
+        exit(EXIT_FAILURE);
+    }
 
     getchar();
-    
     printf("Marca do veículo: ");
-    fgets(new_car.brand, MAX_NAME, stdin);
-    new_car.brand[strcspn(new_car.brand, "\n")] = '\0';
+    fgets(new_car->brand, MAX_NAME, stdin);
+    new_car->brand[strcspn(new_car->brand, "\n")] = '\0';
 
     printf("Modelo do veículo: ");
-    fgets(new_car.model, MAX_NAME, stdin);
-    new_car.model[strcspn(new_car.model, "\n")] = '\0'; 
+    fgets(new_car->model, MAX_NAME, stdin);
+    new_car->model[strcspn(new_car->model, "\n")] = '\0';
 
     printf("Ano de fabricação: ");
-    scanf("%d", &new_car.manufactureYear);
+    scanf("%d", &new_car->manufactureYear);
     getchar();
 
     printf("Quilometragem: ");
-    scanf("%d", &new_car.mileage);
+    scanf("%d", &new_car->mileage);
     getchar();
 
     printf("Valor: ");
-    scanf("%d", &new_car.price);
+    scanf("%f", &new_car->price);
     getchar();
 
-    printf("Valor inserido %d", new_car.price);
+    new_car->next = NULL;
 
-    Car* new_cars = (Car*)realloc(cars, (*car_count + 1) * sizeof(Car));
-    if (new_cars == NULL) {
-        fprintf(stderr, "Erro ao alocar memória para o novo carro.\n");
-        return cars;
-    }
+    head = insert_car_sorted(head, new_car);
 
-    new_cars[*car_count] = new_car;
-    (*car_count)++;
+    puts("\nNovo veículo adicionado com sucesso!");
 
-    puts("\n\nNovo veículo adicionado com sucesso!");
-
-    return new_cars;
+    return head;
 }
 
 int main() {
     printf("%s", "\nBem vindo!\n");
 
-    int car_count = 0;
-    Car* cars = read_cars_from_file("carros.txt", &car_count);
+    Car* car_list = read_cars_from_file("dados.txt");
 
     int run = 1;
 
@@ -140,8 +138,11 @@ int main() {
         switch (choice)
         {
         case 1:
-            for (int i = 0; i < car_count; i++) {
-                print_car(cars[i]);
+            printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
+            Car* temp = car_list;
+            while (temp != NULL) {
+                print_car(temp);
+                temp = temp->next;
             }
             break;
         case 2:
@@ -149,7 +150,7 @@ int main() {
         case 3:
             break;
         case 4:
-            cars = insert_new_car(cars, &car_count);
+            car_list = insert_new_car(car_list);
             break;
         case 5:
             break;
@@ -163,6 +164,12 @@ int main() {
             continue;
         }
     }
-    free(cars);
+
+    while (car_list != NULL) {
+        Car* to_free = car_list;
+        car_list = car_list->next;
+        free(to_free);
+    }
+
     return 0;
 }
