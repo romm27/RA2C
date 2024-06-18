@@ -30,7 +30,7 @@ typedef struct{
 // Conta quantos carros tem no arquivo
 int count() {
     FILE *data = fopen("dados.txt", "r");
-    if (file == NULL) {
+    if (data == NULL) {
         perror("Erro ao abrir o arquivo");
         return -1;
     }
@@ -38,7 +38,7 @@ int count() {
     int count = 0;
     char c;
 
-    while ((c = fgetc(file)) != EOF) {
+    while ((c = fgetc(data)) != EOF) {
         if (c == '\n') {
             count++;
         }
@@ -47,9 +47,10 @@ int count() {
     if (c != '\n' && count > 0) {
         count++;
     }
-    quantity = count / 5;
 
-    fclose(file);
+    int quantity = count / 5;
+
+    fclose(data);
 
     return quantity;
 }
@@ -65,7 +66,7 @@ void print_car(Car c) {
 
 //Lê do arquivo e transforma em structs e já imprime
 // O correto é ter a função que lê do arquivo e monta as structs, outra que imprima todas as structs sem ler do arquivo de novo.
-int print_cars_list() {
+int file_to_struct() {
     FILE *data = fopen("dados.txt", "r");
     if (data == NULL) { perror("Erro ao abrir o arquivo"); exit(1); }
 
@@ -99,18 +100,8 @@ int print_cars_list() {
     }
     
     fclose(data);
-
-    puts("\nLista de veículos:\n");
-    for (int i = 0; i < quantity; i++) {
-        printf("Marca:                %s \
-              \nModelo:               %s \
-              \nAno de fabricação:    %d \
-              \nQuilometragem:        %d km \
-              \nPreço:                R$ %d,00 \
-              \n\n", cars[i].brand, cars[i].model, cars[i].manufactureYear, cars[i].mileage, cars[i].price);
-    }
-
-    return 0;
+    
+    return cars;
 }
 
 // Essa está funcionando certinho
@@ -153,6 +144,13 @@ int main(int argc, char const *argv[])
 {
     printf("%s", "\nBem vindo!\n");
 
+    // printf("%s", file_to_struct());
+
+    // for (int i = 0; i <= 10; i++) {
+    //     printf("%d", cars_list[i]);
+    // }
+
+
     // Depois seja melhor retirar o abrir e fechar das funções deixar só aqui se der certo
     // FILE* data = fopen("dados.txt", "r");
  
@@ -169,7 +167,7 @@ int main(int argc, char const *argv[])
         switch (choice)
         {
         case 1:
-            print_cars_list();
+            
             break;
         case 2:
             break;
