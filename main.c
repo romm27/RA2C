@@ -122,15 +122,37 @@ Car* insert_new_car(Car* head) {
     return head;
 }
 
-int print_all_cars(Car* car_list, char* brand){
-    printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
-            Car* temp = car_list;
-            while (temp != NULL) {
-                if(brand == "" || strcmp(brand, temp->brand) == 0){
-                print_car(temp);
-                }
-                temp = temp->next;
+Car* remove_cars_by_mileage(Car* head, int max_mileage) {
+    Car* current = head;
+    Car* prev = NULL;
+
+    while (current != NULL) {
+        if (current->mileage > max_mileage) {
+            Car* to_delete = current;
+            if (prev == NULL) {
+                head = current->next;
+            } else {
+                prev->next = current->next;
             }
+            current = current->next;
+            free(to_delete);
+        } else {
+            prev = current;
+            current = current->next;
+        }
+    }
+    return head;
+}
+
+int print_car_list(Car* car_list, char* brand){
+    printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
+    Car* temp = car_list;
+    while (temp != NULL) {
+        if(brand == "" || strcmp(brand, temp->brand) == 0){
+            print_car(temp);
+        }
+        temp = temp->next;
+    }
 }
 
 int main() {
@@ -149,13 +171,13 @@ int main() {
         switch (choice)
         {
         case 1:
-            print_all_cars(car_list, "");
+            print_car_list(car_list, "");
             break;
         case 2:
-            char temp[64];
+            char brand_name[MAX_NAME];
             printf("Por favor digite o nome da marca que você deseja buscar corretamente: ");
-            scanf("%s", temp);
-            print_all_cars(car_list, temp);
+            scanf("%s", brand_name);
+            print_car_list(car_list, brand_name);
             break;
         case 3:
             break;
@@ -163,6 +185,12 @@ int main() {
             car_list = insert_new_car(car_list);
             break;
         case 5:
+            int max_mil;
+            printf("Digite a quilometragem máxima a ser mantida: ");
+            scanf("%d", &max_mil);
+            car_list = remove_cars_by_mileage(car_list, max_mil);
+            printf("Todos os Veículos com a quilometragem acima de %d km foram removidos.\n", max_mil);
+            print_car_list(car_list, "");
             break;
         case 6:
             run = 0;
