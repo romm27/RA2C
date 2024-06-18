@@ -152,9 +152,7 @@ int print_car_list(Car* car_list, char* brand, float min_price, float max_price)
         int too_expensive = max_price > -1 && temp->price > max_price;
         int invalid_brand = brand != "" && strcmp(brand, temp->brand);
 
-        //printf("%i %i %i ", too_cheap, too_expensive, invalid_brand); //Debug
-
-        if((too_cheap + too_expensive + invalid_brand) == 0){ //Checks if all of the conditions are false.
+        if((too_cheap + too_expensive + invalid_brand) == 0){ 
             print_car(temp);
         }
         temp = temp->next;
