@@ -122,6 +122,15 @@ Car* insert_new_car(Car* head) {
     return head;
 }
 
+int print_all_cars(Car* car_list){
+    printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
+            Car* temp = car_list;
+            while (temp != NULL) {
+                print_car(temp);
+                temp = temp->next;
+            }
+}
+
 int main() {
     printf("%s", "\nBem vindo!\n");
 
@@ -138,12 +147,7 @@ int main() {
         switch (choice)
         {
         case 1:
-            printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
-            Car* temp = car_list;
-            while (temp != NULL) {
-                print_car(temp);
-                temp = temp->next;
-            }
+            print_all_cars(car_list);
             break;
         case 2:
             break;
