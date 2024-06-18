@@ -122,11 +122,13 @@ Car* insert_new_car(Car* head) {
     return head;
 }
 
-int print_all_cars(Car* car_list){
+int print_all_cars(Car* car_list, char* brand){
     printf("%s", "\n+------------------------Lista de veículos-----------------------+\n\n");
             Car* temp = car_list;
             while (temp != NULL) {
+                if(brand == "" || strcmp(brand, temp->brand) == 0){
                 print_car(temp);
+                }
                 temp = temp->next;
             }
 }
@@ -147,9 +149,13 @@ int main() {
         switch (choice)
         {
         case 1:
-            print_all_cars(car_list);
+            print_all_cars(car_list, "");
             break;
         case 2:
+            char temp[64];
+            printf("Por favor digite o nome da marca que você deseja buscar corretamente: ");
+            scanf("%s", temp);
+            print_all_cars(car_list, temp);
             break;
         case 3:
             break;
