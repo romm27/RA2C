@@ -24,12 +24,14 @@ typedef struct Car {
     struct Car* next;
 } Car;
 
-void print_car(Car* c) {
+int print_car(Car* c) {
     printf("Marca:                %s\n", c->brand);
     printf("Modelo:               %s\n", c->model);
     printf("Ano de fabricação:    %d\n", c->manufactureYear);
     printf("Quilometragem:        %d km\n", c->mileage);
     printf("Preço:                R$ %.2f\n\n", c->price);
+
+    return 0
 }
 
 Car* insert_car_sorted(Car* head, Car* new_car) {
@@ -157,6 +159,7 @@ int print_car_list(Car* car_list, char* brand, float min_price, float max_price)
         }
         temp = temp->next;
     }
+    return 0
 }
 
 int main() {
