@@ -1,20 +1,8 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define size_t ELEMENT_SIZE = sizeof(Car);
-#define MAX_NAME 20
-
-typedef struct{
-    char brand[MAX_NAME];
-    char model[MAX_NAME];
-    int manufactureYear;
-    int mileage;
-    int price;
-    struct Car* next; // ainda não usei a lista encadeada
-} Car;
+#define MAX_NAME 50
 
 #define OPTIONS    "\n +---------------------------------------------------------------+ \
                     \n |                              MENU                             | \
@@ -27,91 +15,75 @@ typedef struct{
                     \n | [ 6 ] Sair                                                    | \
                     \n +---------------------------------------------------------------+ \n"
 
-// Conta quantos carros tem no arquivo
-int count() {
-    FILE *data = fopen("dados.txt", "r");
-    if (data == NULL) {
-        perror("Erro ao abrir o arquivo");
-        return -1;
+typedef struct Car {
+    char brand[MAX_NAME];
+    char model[MAX_NAME];
+    int manufactureYear;
+    int mileage;
+    int price; //Necessário fazer correções para float
+} Car;
+
+void print_car(Car c) {
+    printf("Marca:                %s\n", c.brand);
+    printf("Modelo:               %s\n", c.model);
+    printf("Ano de fabricação:    %d\n", c.manufactureYear);
+    printf("Quilometragem:        %d km\n", c.mileage);
+    printf("Preço:                R$ %d\n\n", c.price);
+}
+
+Car* read_cars_from_file(const char* filename, int* car_count) {
+    FILE* file = fopen("dados.txt", "r");
+    if (file == NULL) {
+        fprintf(stderr, "Erro ao abrir o arquivo.\n");
+        exit(EXIT_FAILURE);
     }
 
     int count = 0;
-    char c;
-
-    while ((c = fgetc(data)) != EOF) {
-        if (c == '\n') {
-            count++;
-        }
-    }
-
-    if (c != '\n' && count > 0) {
+    char buffer[256];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
         count++;
     }
 
-    int quantity = count / 5;
+    count /= 5;
 
-    fclose(data);
+    rewind(file);
 
-    return quantity;
-}
-
-void print_car(Car c) {
-    printf("Marca:                %s \n");
-    printf("Modelo:               %s \n");
-    printf("Ano de fabricação:    %d \n");
-    printf("Quilometragem:        %d km \n");
-    printf("Preço:                R$ %d,00 \n");
-    printf("\n\n", c.brand, c.model, c.manufactureYear, c.mileage, c.price);
-}
-
-//Lê do arquivo e transforma em structs e já imprime
-// O correto é ter a função que lê do arquivo e monta as structs, outra que imprima todas as structs sem ler do arquivo de novo.
-int file_to_struct() {
-    FILE *data = fopen("dados.txt", "r");
-    if (data == NULL) { perror("Erro ao abrir o arquivo"); exit(1); }
-
-    Car cars[MAX_NAME];
-    char c; // usado para descartar caracteres da entrada
-    int quantity = count();
-
-    fscanf(data, "%d", &quantity);
-    // descarta tudo até o LF:
-    do {
-        c = fgetc(data);
-    } while (c != '\n' && c != EOF);
-
-    for (int i = 0; i < quantity; i++) {
-        fgets(cars[i].brand, MAX_NAME, data);
-        int CRLF = strcspn(cars[i].brand, "\r\n");
-        cars[i].brand[CRLF] = '\0';
-
-        fgets(cars[i].model, MAX_NAME, data);
-        CRLF = strcspn(cars[i].model, "\r\n");
-        cars[i].model[CRLF] = '\0';
-
-        fscanf(data, "%d", &(cars[i].manufactureYear));
-        fscanf(data, "%d", &(cars[i].mileage));
-        fscanf(data, "%d", &(cars[i].price));
-                
-        // descarta tudo até o LF
-        do {
-            c = fgetc(data);
-        } while (c != '\n' && c != EOF);
+    Car* cars = (Car*)malloc(count * sizeof(Car));
+    if (cars == NULL) {
+        fprintf(stderr, "Erro ao alocar memória para os carros.\n");
+        exit(EXIT_FAILURE);
     }
-    
-    fclose(data);
-    
+
+    int index = 0;
+    while (index < count) {
+        fgets(cars[index].brand, MAX_NAME, file);
+        cars[index].brand[strcspn(cars[index].brand, "\n")] = 0;
+
+        fgets(cars[index].model, MAX_NAME, file);
+        cars[index].model[strcspn(cars[index].model, "\n")] = 0;
+
+        fgets(buffer, sizeof(buffer), file);
+        sscanf(buffer, "%d", &cars[index].manufactureYear);
+
+        fgets(buffer, sizeof(buffer), file);
+        sscanf(buffer, "%d", &cars[index].mileage);
+
+        fgets(buffer, sizeof(buffer), file);
+        sscanf(buffer, "%d", &cars[index].price);
+
+        index++;
+    }
+
+    fclose(file);
+
+    *car_count = count;
     return cars;
 }
 
-// Essa está funcionando certinho
-int insert_new_car() {
-    printf("\nInsira os dados de um novo veículo.\n");
+Car* insert_new_car(Car* cars, int* car_count) {
+    printf("\nInsira os dados de um novo veículo.\n\n");
 
     Car new_car;
-
-    strcpy(new_car.brand, "");
-    strcpy(new_car.model, "");
 
     getchar();
     
@@ -135,51 +107,54 @@ int insert_new_car() {
     scanf("%d", &new_car.price);
     getchar();
 
-    puts("\nNovo veículo adicionado com sucesso!");
+    printf("Valor inserido %d", new_car.price);
 
-    return 0;
+    Car* new_cars = (Car*)realloc(cars, (*car_count + 1) * sizeof(Car));
+    if (new_cars == NULL) {
+        fprintf(stderr, "Erro ao alocar memória para o novo carro.\n");
+        return cars;
+    }
+
+    new_cars[*car_count] = new_car;
+    (*car_count)++;
+
+    puts("\n\nNovo veículo adicionado com sucesso!");
+
+    return new_cars;
 }
 
-int main(int argc, char const *argv[])
-{
+int main() {
     printf("%s", "\nBem vindo!\n");
 
-    // printf("%s", file_to_struct());
+    int car_count = 0;
+    Car* cars = read_cars_from_file("carros.txt", &car_count);
 
-    // for (int i = 0; i <= 10; i++) {
-    //     printf("%d", cars_list[i]);
-    // }
-
-
-    // Depois seja melhor retirar o abrir e fechar das funções deixar só aqui se der certo
-    // FILE* data = fopen("dados.txt", "r");
- 
-    // if(data == NULL){ printf("%s", "Falha na abertura do arquivo."); exit(0); }
-
-    bool run = true;
+    int run = 1;
 
     while(run){
         int choice;
         printf("%s", OPTIONS);
-        printf("%s", "Digite a opção desejada: ");
+        printf("%s", "\nDigite a opção desejada: ");
         scanf("%i", &choice);
 
         switch (choice)
         {
         case 1:
-            
+            for (int i = 0; i < car_count; i++) {
+                print_car(cars[i]);
+            }
             break;
         case 2:
             break;
         case 3:
             break;
         case 4:
-            insert_new_car();
+            cars = insert_new_car(cars, &car_count);
             break;
         case 5:
             break;
         case 6:
-            run = false;
+            run = 0;
             printf("%s", "\nMuito obrigado!\n");
             break;
 
@@ -188,6 +163,6 @@ int main(int argc, char const *argv[])
             continue;
         }
     }
-    
+    free(cars);
     return 0;
 }
